@@ -1,6 +1,15 @@
-class No_loop_end(Exception):
-    "No ] found after [" # ] added to fix indentation on my ide
-    pass
+class InterpeterExceptions:
+    def __init__(self) -> None:
+        pass
 
-class Cant_reach_pointer(Exception):
-    "cannot go to cell less than cell #0"
+    @staticmethod
+    def CantIncrementPointer():
+        raise Exception("pointer cannot be incremented any more")
+
+    @staticmethod
+    def CantDecrementPointer():
+        raise Exception("pointer cannot be decremented any more")
+
+    @staticmethod
+    def BraceMismatch():
+        raise Exception("braces are mismatched")
