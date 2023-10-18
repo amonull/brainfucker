@@ -2,7 +2,7 @@
 
 from typing import Union, Callable
 
-from .exceptions import InterpeterExceptions
+from ..exceptions.interpeter_exceptions import InterpeterExceptions
 
 class Buffer:
     """
