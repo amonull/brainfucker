@@ -2,7 +2,7 @@
 
 from typing import Union, Callable
 
-from ..exceptions.interpeter_exceptions import InterpeterExceptions
+from ..exceptions import InterpeterExceptions
 
 class Buffer:
     """
@@ -74,13 +74,13 @@ class Interpeter(Buffer):
         # brainfuck settings
         self.brainfuck_string = brainfuck_string
         self.string_pos: int = 0
-        self.jump_map: dict[int, int] = self.find_jumps()
+        self.jump_map: dict[int, int] = self._find_jumps()
 
         # debugger settings
         self.pause: bool = False
         self.breakpoints: list[int] = breakpoints
 
-    def find_jumps(self) -> dict[int, int]:
+    def _find_jumps(self) -> dict[int, int]:
         """
         finds jumps inside the string and gets the equivalent positon to jump forward/backward
         """
@@ -92,7 +92,10 @@ class Interpeter(Buffer):
             if opchar == "[":
                 stack.append(self.string_pos)
             elif opchar == "]":
-                r_bracket = stack.pop() # keep track of the last added r_bracket
+                try:
+                    r_bracket = stack.pop() # keep track of the last added r_bracket
+                except IndexError:
+                    self.exception_raiser.BraceMismatch()
                 return_dict[r_bracket] = self.string_pos
                 return_dict[self.string_pos] = r_bracket
                 # keeping values as {r_bracket1: l_bracket1, l_bracket1: r_bracket1}
@@ -106,14 +109,14 @@ class Interpeter(Buffer):
 
         return return_dict
 
-    def __jump_foward(self):
+    def _jump_foward(self):
         """
         if current pointer is 0 jump forward
         """
         if self.cells[self.pointer] == 0:
             self.string_pos = self.jump_map[self.string_pos]
 
-    def __jump_backward(self):
+    def _jump_backward(self):
         """
         if current pointer is not 0 jump backwards
         """
@@ -124,15 +127,15 @@ class Interpeter(Buffer):
         """
         returns correct function depending on opchar
         """
-        op_dict = {  '+': self.inc_ptr_val,
-                        '-': self.dec_ptr_val,
-                        '>': self.inc_ptr,
-                        '<': self.dec_ptr,
-                        '.': self.print_ptr,
-                        ',': self.read_input,
-                        '[': self.__jump_foward,
-                        ']': self.__jump_backward,
-                      }
+        op_dict = { '+': self.inc_ptr_val,
+                    '-': self.dec_ptr_val,
+                    '>': self.inc_ptr,
+                    '<': self.dec_ptr,
+                    '.': self.print_ptr,
+                    ',': self.read_input,
+                    '[': self._jump_foward,
+                    ']': self._jump_backward,
+                    }
         return op_dict.get(opchar)
 
     def advance(self) -> None:
