@@ -1,5 +1,8 @@
 import tkinter as tk
 
+from ...utils.brainfuck.interpeter import Interpeter
+
+
 class BrainfuckDebugger(tk.Toplevel):
     def __init__(self) -> None:
         super().__init__()

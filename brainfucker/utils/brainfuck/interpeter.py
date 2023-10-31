@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 
+import sys
 from typing import Union, Callable
 
-from ..exceptions import InterpeterExceptions
 
 class Buffer:
     """
     class to handle everything to do with buffers
     like incrementig the current pointer or to change the current pointer
     """
-    def __init__(self, cell_size: int, ptr_size: int) -> None:
+    def __init__(self, cell_size: int, ptr_size: int, new_stdout_place = sys.stdout) -> None:
         self.cells = [ptr_size] * cell_size
         self.pointer = 0
-        self.exception_raiser = InterpeterExceptions()
+        sys.stdout = new_stdout_place # redirects stdout to chosen place
 
     def inc_ptr_val(self) -> None:
         """
@@ -33,7 +33,7 @@ class Buffer:
         moves to next pointer
         """
         if self.pointer == len(self.cells):
-            self.exception_raiser.CantIncrementPointer()
+            raise Exception("pointer cannot be incremented any more")
         else:
             self.pointer += 1
 
@@ -42,7 +42,7 @@ class Buffer:
         moves to previous pointer
         """
         if self.pointer == 0:
-            self.exception_raiser.CantDecrementPointer()
+            raise Exception("pointer cannot be decremented any more")
         else:
             self.pointer -= 1
 
@@ -55,7 +55,9 @@ class Buffer:
     def read_input(self) -> None:
         """
         gets single char from user and puts to current pointer
+        Every input is treated as a str and only first char is taken
         """
+        # TODO: add interpeter flag option to allow int input to be treated as int and for floats to use 2 pointer cells (2 seperate options triggered by flag options)
         self.cells[self.pointer] = ord(input()[0])
 
     def __str__(self) -> str:
@@ -95,7 +97,7 @@ class Interpeter(Buffer):
                 try:
                     r_bracket = stack.pop() # keep track of the last added r_bracket
                 except IndexError:
-                    self.exception_raiser.BraceMismatch()
+                    raise Exception("braces are mismatched")
                 return_dict[r_bracket] = self.string_pos
                 return_dict[self.string_pos] = r_bracket
                 # keeping values as {r_bracket1: l_bracket1, l_bracket1: r_bracket1}
@@ -103,7 +105,7 @@ class Interpeter(Buffer):
             self.advance()
 
         if stack:
-            self.exception_raiser.BraceMismatch()
+            raise Exception("braces are mismatched")
 
         self.string_pos = 0 # reset to 0
 

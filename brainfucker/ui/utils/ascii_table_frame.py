@@ -5,7 +5,7 @@ class AsciiTableFrame(tk.Frame):
     def __init__(self, parent: tk.Tk, font: tuple) -> None:
         super().__init__(parent)
 
-        # symbol | dec | oct | hex | Desc
+        # symbol | dec |  Desc
         ascii_table_list = [
                 ("NUL", "0"),
                 ("SOH", "1"),
@@ -263,4 +263,4 @@ class AsciiTableFrame(tk.Frame):
                 ("ý", "253"),
                 ("þ", "254"),
                 ("ÿ", "255"),
-                ]
+                ]        
